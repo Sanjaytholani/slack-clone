@@ -1,20 +1,98 @@
-import React from "react";
+import {
+  Button,
+  createMuiTheme,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  MuiThemeProvider,
+  TextField,
+} from "@material-ui/core";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { db } from "../firebase";
 
-function SidebarOption({ Icon, title }) {
+const SidebarOption = ({ Icon, title, addChannel }) => {
+  const [open, setOpen] = useState(false);
+  const [channelInput, setChannelInput] = useState("");
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const theme = createMuiTheme({
+    palette: {
+      primary: {
+        main: "#fff",
+      },
+    },
+  });
+  const handelSubmit = () => {
+    db.collection("rooms").add({
+      name: channelInput,
+    });
+  };
+  const selectChannel = () => {};
   return (
-    <SidebarOptionContainer>
-      {Icon && <Icon fontSoze="small" style={{ padding: 10 }} />}
-      {Icon ? (
-        <h3>{title}</h3>
-      ) : (
-        <SidebarOptionChannel>
-          <span>#</span> <h3>{title}</h3>
-        </SidebarOptionChannel>
-      )}
-    </SidebarOptionContainer>
+    <MuiThemeProvider theme={theme}>
+      <SidebarOptionContainer
+        onClick={addChannel ? handleClickOpen : selectChannel}
+      >
+        {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
+        {Icon ? (
+          <h3>{title}</h3>
+        ) : (
+          <SidebarOptionChannel>
+            <span>#</span> <h3>{title}</h3>
+          </SidebarOptionChannel>
+        )}
+      </SidebarOptionContainer>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContainer>
+          <DialogTitle id="form-dialog-title">Channel Name</DialogTitle>
+          <DialogContent>
+            <DialogContentText style={{ color: "white" }}>
+              Enter the channel Name
+            </DialogContentText>
+            <TextFieldStyled
+              autoFocus
+              margin="dense"
+              error={channelInput.length < 4}
+              id="name"
+              label="Channel Name"
+              type="text"
+              fullWidth
+              onChange={(e) => setChannelInput(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (channelInput.length >= 4) {
+                  handleClose();
+                  handelSubmit();
+                }
+              }}
+              color="primary"
+            >
+              Add
+            </Button>
+          </DialogActions>
+        </DialogContainer>
+      </Dialog>
+    </MuiThemeProvider>
   );
-}
+};
 
 export default SidebarOption;
 
@@ -44,7 +122,34 @@ const SidebarOptionChannel = styled.div`
     font-weight: 500;
   }
   > span {
-    padding: 15px;
+    padding: 10px;
     font-size: 20px;
+  }
+`;
+const DialogContainer = styled.div`
+  background-color: var(--slack-color);
+  color: white;
+`;
+const TextFieldStyled = styled(TextField)`
+  background-color: var(--slack-color);
+  > .MuiInputBase-root {
+    color: white;
+  }
+  .MuiInput-underline:before {
+    border-bottom-color: white;
+  }
+  /* hover (double-ampersand needed for specificity reasons. */
+  && .MuiInput-underline:hover:before {
+    border-bottom-color: white;
+  }
+  /* focused */
+  .MuiInput-underline:after {
+    border-bottom-color: white;
+  }
+  > label {
+    color: white;
+  }
+  > label.Mui-focused {
+    color: white;
   }
 `;
