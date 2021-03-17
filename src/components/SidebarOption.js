@@ -10,12 +10,15 @@ import {
   TextField,
 } from "@material-ui/core";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { enterRoom } from "../features/userSlice";
 import { db } from "../firebase";
 
-const SidebarOption = ({ Icon, title, addChannel }) => {
+const SidebarOption = ({ Icon, title, addChannel, selectChannelId, id }) => {
   const [open, setOpen] = useState(false);
   const [channelInput, setChannelInput] = useState("");
+  const dispatch = useDispatch();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -35,11 +38,27 @@ const SidebarOption = ({ Icon, title, addChannel }) => {
       name: channelInput,
     });
   };
-  const selectChannel = () => {};
+  const selectChannel = () => {
+    dispatch(
+      enterRoom({
+        roomId: id,
+      })
+    );
+  };
+  const submit = (e) => {
+    e.preventDefault();
+    if (addChannel) {
+      handleClickOpen();
+    } else if (selectChannelId) {
+      selectChannel();
+    }
+  };
   return (
     <MuiThemeProvider theme={theme}>
       <SidebarOptionContainer
-        onClick={addChannel ? handleClickOpen : selectChannel}
+        onClick={(e) => {
+          submit(e);
+        }}
       >
         {Icon && <Icon fontSize="small" style={{ padding: 10 }} />}
         {Icon ? (

@@ -28,14 +28,22 @@ function Header() {
       <HeaderLeft>
         {sidebar ? (
           <CloseContainer>
-            <IconButton onClick={handelSidebar}>
+            <IconButton
+              onClick={(e) => {
+                handelSidebar(e);
+              }}
+            >
               <Close />
             </IconButton>
             <h2>Slack</h2>
             <Edit />
           </CloseContainer>
         ) : (
-          <IconButton onClick={handelSidebar}>
+          <IconButton
+            onClick={(e) => {
+              handelSidebar(e);
+            }}
+          >
             <Menu />
           </IconButton>
         )}

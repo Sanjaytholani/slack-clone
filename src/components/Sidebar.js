@@ -15,14 +15,10 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
 import SidebarOption from "./SidebarOption";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { db } from "../firebase";
 
-function Sidebar() {
+function Sidebar({ channels }) {
   const [showChannels, setShowChannels] = useState(true);
-  const [channels, loading, error] = useCollection(
-    db.collection("rooms").orderBy("name")
-  );
+
   const variants = {
     open: {
       transition: {
@@ -83,7 +79,12 @@ function Sidebar() {
       >
         {channels?.docs.map((doc) => (
           <motion.div id={doc.id} key={doc.id} variants={subVariants}>
-            <SidebarOption title={doc.data().name} />
+            <SidebarOption
+              selectChannelId
+              onClick={(e) => e.preventDefault()}
+              id={doc.id}
+              title={doc.data().name}
+            />
           </motion.div>
         ))}
       </motion.nav>
@@ -105,6 +106,7 @@ const SidebarContainer = styled.div`
     border: 0;
     border-bottom: 1px solid #49274b;
   }
+  overflow-y: scroll;
 `;
 const SidebarInfo = styled.div`
   margin-bottom: 5px;

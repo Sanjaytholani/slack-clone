@@ -1,6 +1,10 @@
 * {
   margin: 0;
 }
+::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
 body {
   --slack-color: #3f0f40;
   overflow: scroll;
